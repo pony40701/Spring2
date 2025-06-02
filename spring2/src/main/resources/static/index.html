@@ -6,44 +6,87 @@
 <div id="welcome"></div>
 <img id="icon" />
 <button id="logout">Logout</button>
+<hr />
+<table id="hotelTable" border="1" width="100%">
+	<thead>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Address</th>
+			<th>Tel</th>
+		</tr>
+	</thead>
+	<tbody></tbody>
+</table>
+
+
+
+
 <script>
-	$(document).ready(
-			function() {
-				// 檢查 session
-				$.ajax({
-					url : "/api/members/status",
-					method : "POST",
-					dataType : "json"
-				}).done(
-						function(data) {
-							console.log(data);
-							if (!data.success) {
-								window.location.href = 'login.html';
-							} else {
-								$("#companyName").text(data.companyName);
-								$("#companyTel").text(data.companyTel);
-								$("#welcome").text(
-										"Hello, " + data.member.realname);
-								$("#icon").attr(
-										"src",
-										"data:image/png; base64, "
-												+ data.member.icon);
-							}
-
-						}).fail(function() {
-					window.location.href = 'login.html';
-				});
-
-				$("#logout").click(function() {
-					$.ajax({
-						url : "/api/members/logout",
-						method : "GET"
-					}).always(function() {
-						window.location.replace('login.html');
-						//window.location.href = 'login.html';
-					});
-
-				});
-
+	$(document).ready(function(){
+		// 檢查 session
+		$.ajax({
+			url: "/api/members/status",
+			method: "POST",
+			dataType: "json"
+		}).done(function(data){
+			console.log(data);
+			if (!data.success){
+				window.location.href = 'login.html';
+			}else{
+				$("#companyName").text(data.companyName);
+				$("#companyTel").text(data.companyTel);
+				$("#welcome").text("Hello, " + data.member.realname);
+				$("#icon").attr("src", "data:image/png; base64, " + data.member.icon);
+			}
+			
+		}).fail(function(){
+			window.location.href = 'login.html';
+		});
+		
+		$("#logout").click(function(){
+			$.ajax({
+				url: "/api/members/logout",
+				method: "GET"
+			}).always(function(){
+				window.location.replace('login.html');
+				//window.location.href = 'login.html';
 			});
+			
+		});
+		
+		function loadHotel(){
+			$.ajax({
+				url: "/api/hotels/v1?page=2&size=7",
+				method : "GET",
+				dataType: "json"
+			}).done(data => {
+				console.log(data);
+				let tbody = $("#hotelTable tbody").empty();
+				data.content.forEach(hotel => {
+					tbody.append(`
+						<tr>
+							<td>${hotel.id}</td>
+							<td>${hotel.name}</td>
+							<td>${hotel.addr}</td>
+							<td>${hotel.tel}</td>
+						</tr>
+					`);
+				});
+				
+				
+			});
+		}
+		
+		
+		loadHotel();
+		
+		
+		
+	});
+	
+	
+	
+	
+	
 </script>
