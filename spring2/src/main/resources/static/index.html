@@ -1,0 +1,49 @@
+<meta charset="utf-8" />
+<script
+	src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<h1 id="companyName"></h1>
+<h3 id="companyTel"></h3>
+<div id="welcome"></div>
+<img id="icon" />
+<button id="logout">Logout</button>
+<script>
+	$(document).ready(
+			function() {
+				// 檢查 session
+				$.ajax({
+					url : "/api/members/status",
+					method : "POST",
+					dataType : "json"
+				}).done(
+						function(data) {
+							console.log(data);
+							if (!data.success) {
+								window.location.href = 'login.html';
+							} else {
+								$("#companyName").text(data.companyName);
+								$("#companyTel").text(data.companyTel);
+								$("#welcome").text(
+										"Hello, " + data.member.realname);
+								$("#icon").attr(
+										"src",
+										"data:image/png; base64, "
+												+ data.member.icon);
+							}
+
+						}).fail(function() {
+					window.location.href = 'login.html';
+				});
+
+				$("#logout").click(function() {
+					$.ajax({
+						url : "/api/members/logout",
+						method : "GET"
+					}).always(function() {
+						window.location.replace('login.html');
+						//window.location.href = 'login.html';
+					});
+
+				});
+
+			});
+</script>
