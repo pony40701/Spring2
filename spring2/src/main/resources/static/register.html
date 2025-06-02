@@ -1,0 +1,54 @@
+<meta charset="utf-8" />
+<form id="regForm">
+	<input type="text" name="account" id="account" required />
+		<span id="mesg" style="color: red"></span><br />
+	<input type="password" name="passwd" id="passwd" required /><br />
+	<input type="text" name="realname" id="realname" required /><br />
+	<button type="submit">Register</button>
+</form>
+<hr />
+<div id="result"></div>
+<script>
+	let account = document.getElementById("account");
+	let mesg = document.getElementById("mesg");
+	account.addEventListener("blur", async () => {
+		let accountValue = account.value;
+		if (accountValue){
+			let res = 
+				await fetch(`/api/members/exists?account=${encodeURIComponent(accountValue)}`);
+			let isExist = await res.json();
+			console.log(isExist);
+			mesg.textContent = isExist? "此帳號已使用, 換一個":"";
+		}
+	});
+	
+	document.getElementById("regForm").addEventListener(
+		"submit", async (e) => {
+			e.preventDefault();
+			let form = e.target;
+			let data = {
+				account: form.account.value,
+				passwd: form.passwd.value,
+				realname: form.realname.value
+			};
+			
+			let res = await fetch("/api/members/register", {
+				method: "POST",
+				headers: {"Content-Type":"application/json"},
+				body: JSON.stringify(data)
+			});
+			
+			
+			let json = await res.json();
+			console.log(json);
+			document.getElementById("result").textContent = json.message;
+			
+	
+		});
+	
+	
+	
+	
+	
+	
+</script>
